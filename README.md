@@ -3,10 +3,10 @@
 
 ## Generate keys
 
-openssl genrsa -out key.pem 1024
-openssl rsa -in key.pem -outform PEM -pubout -out public.pem
-openssl rsa -pubin -inform PEM -in public.pem -modulus -outform PEM -out pub.spki.pem
-
+```bash
+openssl genpkey -algorithm RSA -out privatekey.pem
+openssl rsa -in privatekey.pem -pubout -out publickey.pem
+```
 
 ## Getting Started
 
