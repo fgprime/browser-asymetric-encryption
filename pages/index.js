@@ -1,74 +1,56 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-const pemEncodedKey = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy3Xo3U13dc+xojwQYWoJLCbOQ5fOVY8LlnqcJm1W1BFtxIhOAJWohiHuIRMctv7dzx47TLlmARSKvTRjd0dF92jx/xY20Lz+DXp8YL5yUWAFgA3XkO3LSJgEOex10NB8jfkmgSb7QIudTVvbbUDfd5fwIBmCtaCwWx7NyeWWDb7A9cFxj7EjRdrDaK3ux/ToMLHFXVLqSL341TkCf4ZQoz96RFPUGPPLOfvN0x66CM1PQCkdhzjE6U5XGE964ZkkYUPPsy6Dcie4obhW4vDjgUmLzv0z7UD010RLIneUgDE2FqBfY/C+uWigNPBPkkQ+Bv/UigS6dHqTCVeD5wgyBQIDAQAB
+const pemEncodedPublicKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo5jclK+fySPnGFco1Nut
+7eiXzdPIkR5zBxVSKCXIdOJ0qsPjYIeKZQ1Di+xFfJJEO3xuNi8M9ol2Zqte/DD2
+W83OxQre0tGUmx5mddlChwUthPXt6i+lCEGpjkiD5fATK70YBMFc4UI3iTzFxPcQ
+ZXvhe53uCkR4JUJhFireeujExr+spoodaUxE4dZvu4WXeJiXrG5B9ONJ9awaZJAi
+kOqm7Q70cfI5LnW2BaOIQcgGPNvErGwBgJrE5lk704VIPvet7wnQKzD7I/YnAVWg
+t4iL6xSzKBp/mcS+4S78IIhkhAkxVUrvpnNNnb/Yab/0/7Fatp2PWINSGzD9qyKm
+rwIDAQAB
 -----END PUBLIC KEY-----`;
+
+const pemEncodedPrivateKey = `-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCjmNyUr5/JI+cY
+VyjU263t6JfN08iRHnMHFVIoJch04nSqw+Ngh4plDUOL7EV8kkQ7fG42Lwz2iXZm
+q178MPZbzc7FCt7S0ZSbHmZ12UKHBS2E9e3qL6UIQamOSIPl8BMrvRgEwVzhQjeJ
+PMXE9xBle+F7ne4KRHglQmEWKt566MTGv6ymih1pTETh1m+7hZd4mJesbkH040n1
+rBpkkCKQ6qbtDvRx8jkudbYFo4hByAY828SsbAGAmsTmWTvThUg+963vCdArMPsj
+9icBVaC3iIvrFLMoGn+ZxL7hLvwgiGSECTFVSu+mc02dv9hpv/T/sVq2nY9Yg1Ib
+MP2rIqavAgMBAAECggEAFS5EWMfIMz1/vQoD0lNC2IuFo/Nog0li8SbUhTgnFOMA
+4d8MwEGsLFskRKhpcrBpPx5kEoXS8tRnTPGhEZuxOb+SprY6lSbnS5ILB/UCBQMp
+mo5QqEJU5pXBwxcmZI3JnZ8UzgDO6qctE4qXvGGUcN8yGVQgLpogyAopEbqpJVZq
+rXT/WPSocjFEHGQqudAZsoSFVJOCVM4PrEFc3Tc7Tu4xnO0ttuwPQiRRINd/LkgE
+un02f8tEakmyLSOl6sm/yyoKR2klxIFUwVPJZtSInXInXGhv3iMZhIQuBh1xuw58
+3d4WJQ79tvWdF4QIjP9FPQvTvl3UIYgWmNF+BK34QQKBgQDN5vR+XG4Fv2dOyeGc
+WniFsbQ/t3K9Ndq1rahsGS1Jsz11Bv1gvuuNnP5KHckunrUGyFJiwOFEFyzWRY77
+kklq7fjwxdARawAtBDXuK6WGmnRophMMMvY9/Gw/pcdxEznqZD9erSNdOYVMzdB8
+nNDkijQ7gNY2ENR6Mu4BIsUJYQKBgQDLZtkvnlEHvOklWf32xSnOkVUBmt3sdtpX
+zy3LuUu4bWVASV4KcutzWpF7Ix6vwF03zJO7QYGAVEa55PONoUchgVV3g1VJJ7Q4
+wh0/PhTE0jOU6AafPybchghggloun5k+KfUWapJahTUVkN/CG+03fZKUawsRQFCO
+M94CaStaDwKBgQC5VHGrLy0E1WR6YXJGFpS22d3BIDERp+DFeJrJOdwuozvlEzaL
+ly1UWQP12FuWL9oHUdX991iLvkRoVVG+lMyqh6pzpcmDdAlDe6/DQdwKjQnMi/dH
+GrPT1Vnl7CTZXZHarQLxB+x14+lc2UAYedn4a4FaMbweDAYEO8VIlnA94QKBgQCt
+zXRH/D/BHOsbv4oDEvZmTEkW1f5L0ENCRQYcznilXtTl2ctBonEOYJVvYtMV2onM
+5EJX/+FohprovXpfyy+8sYcWWGLH3+Vfmn7jS2jzxanN03XVHWFXjjAaR0hIDpgj
+RjbmsKneL3TsuJ56fuJ0SBi4Ob97PjmXSTqrVLJ2gQKBgHXIsR2DjEVZRoEu+JIA
+ybVoeJNmfZNVcC/RE1ij74p42xMfVlhYxlaFH5SOp5T2GnaafkfL6JGd0ZXrIqPs
+ihBGzYBg5BqHhw3FAtZltaWjXTCDzsW0A4zuTK6tCw63e7sRVdcA67bIDrS5pIF3
+QfxCdZSvDUp8XAEUzdiiecUo
+-----END PRIVATE KEY-----`;
 
 const text =
   "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.";
 
 export default function Home() {
-  // const [encryptedText, setEncryptedText] = useState(null);
-
   useEffect(() => {
     encrypt();
   });
 
-  // from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey
-  const str2ab = (str) => {
-    const buf = new ArrayBuffer(str.length);
-    const bufView = new Uint8Array(buf);
-    for (let i = 0, strLen = str.length; i < strLen; i++) {
-      bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-  };
-
-  const importRsaKey = async (pem) => {
-    // fetch the part of the PEM string between header and footer
-    const pemHeader = "-----BEGIN PUBLIC KEY-----";
-    const pemFooter = "-----END PUBLIC KEY-----";
-    const pemContents = pem.substring(
-      pemHeader.length,
-      pem.length - pemFooter.length
-    );
-    // base64 decode the string to get the binary data
-    const binaryDerString = window.atob(pemContents);
-    // convert from a binary string to an ArrayBuffer
-    const binaryDer = str2ab(binaryDerString);
-
-    return await window.crypto.subtle
-      .importKey(
-        "spki",
-        binaryDer,
-        {
-          name: "RSA-OAEP",
-          hash: "SHA-256",
-        },
-        true,
-        ["encrypt"]
-      )
-      .then((result) => {
-        // setEncryptionKey;
-        // console.dir(result);
-        return result;
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-
-  const encrypt = (e) => {
-    importRsaKey(pemEncodedKey).then((key) => {
-      encryptMessage(text, key);
-      console.dir(key);
-    });
-  };
-
-  const encryptMessage = async (message, key) => {
+  const encryptDecryptMessage = async (message, key, key2) => {
     let encoder = new TextEncoder();
     let encoded = encoder.encode(message);
 
@@ -78,7 +60,57 @@ export default function Home() {
       encoded
     );
 
+    let originalText = await window.crypto.subtle.decrypt(
+      {
+        name: "RSA-OAEP",
+      },
+      key2,
+      ciphertext
+    );
+
+    const decoder = new TextDecoder();
+    const decryptedText = decoder.decode(originalText);
+
     console.dir(ciphertext);
+    console.log(decryptedText);
+  };
+
+  const encrypt = (e) => {
+    Promise.all([publicKey(), privateKey()]).then((keys) => {
+      encryptDecryptMessage(text, keys[0], keys[1]);
+    });
+  };
+
+  const publicKey = () => {
+    return crypto.subtle.importKey(
+      "spki",
+      pemToBinary(pemEncodedPublicKey),
+      {
+        name: "RSA-OAEP",
+        hash: "SHA-256",
+      },
+      true,
+      ["encrypt"]
+    );
+  };
+
+  const privateKey = () => {
+    return crypto.subtle.importKey(
+      "pkcs8",
+      pemToBinary(pemEncodedPrivateKey),
+      {
+        name: "RSA-OAEP",
+        hash: "SHA-256",
+      },
+      false,
+      ["decrypt"]
+    );
+  };
+
+  const pemToBinary = (pem) => {
+    const lines = pem.split("\n");
+    const encoded = lines.slice(1, -1).join("");
+    return Uint8Array.from(window.atob(encoded), (c) => c.charCodeAt(0));
   };
 
   return (
@@ -90,6 +122,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
+        <h1>Encryption example</h1>
         <button onClick={encrypt}>Import PEM</button>
       </main>
 
