@@ -109,7 +109,21 @@ export default function Home() {
 
   const pemToBinary = (pem) => {
     const lines = pem.split("\n");
-    const encoded = lines.slice(1, -1).join("");
+
+    const start = lines.findIndex((element) => {
+      return element.includes("BEGIN") && element.includes("KEY");
+    });
+
+    const end = lines.findIndex((element) => {
+      return element.includes("END") && element.includes("KEY");
+    });
+
+    if (end === -1 || start === -1) throw new Error("Invalid PEM file");
+
+    const encoded = lines
+      .filter((_, index) => index > start && index < end)
+      .join("");
+
     return Uint8Array.from(window.atob(encoded), (c) => c.charCodeAt(0));
   };
 
