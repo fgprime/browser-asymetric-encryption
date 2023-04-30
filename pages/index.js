@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const pemEncodedPublicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo5jclK+fySPnGFco1Nut
@@ -42,13 +42,57 @@ ihBGzYBg5BqHhw3FAtZltaWjXTCDzsW0A4zuTK6tCw63e7sRVdcA67bIDrS5pIF3
 QfxCdZSvDUp8XAEUzdiiecUo
 -----END PRIVATE KEY-----`;
 
-const text =
+const exmapleText =
   "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.";
 
+const State = Object.freeze({
+  LOADING: "LOADING",
+  ERROR: "ERROR",
+  READY: "READY",
+});
+
 export default function Home() {
+  const [state, setState] = useState(State.LOADING);
+  let cryptoKey = null;
+
   useEffect(() => {
-    encrypt();
+    loadPublicKey().then((publicKeyPem) => {
+      createCryptoKeyFromPublicKey(publicKeyPem).then((result) => {
+        console.dir(result);
+        cryptoKey = result;
+        encrypt(exmapleText);
+      });
+    });
   });
+
+  const loadPublicKey = () => {
+    return fetch("publickey")
+      .then((response) => {
+        if (!response.ok) {
+          setState(State.ERROR);
+          throw new Error("Network response failed");
+        }
+        console.dir(response);
+        return response.text();
+      })
+      .catch((error) => {
+        console.log(error);
+        setState(State.ERROR);
+      });
+  };
+
+  const createCryptoKeyFromPublicKey = (publicKeyPem) => {
+    return crypto.subtle.importKey(
+      "spki",
+      pemToBinary(publicKeyPem),
+      {
+        name: "RSA-OAEP",
+        hash: "SHA-256",
+      },
+      true,
+      ["encrypt"]
+    );
+  };
 
   const encryptDecryptMessage = async (message, key, key2) => {
     let encoder = new TextEncoder();
@@ -75,25 +119,13 @@ export default function Home() {
     console.log(decryptedText);
   };
 
-  const encrypt = (e) => {
-    Promise.all([publicKey(), privateKey()]).then((keys) => {
-      encryptDecryptMessage(text, keys[0], keys[1]);
+  const encrypt = (text) => {
+    privateKey().then((key) => {
+      encryptDecryptMessage(text, cryptoKey, key);
     });
   };
 
-  const publicKey = () => {
-    return crypto.subtle.importKey(
-      "spki",
-      pemToBinary(pemEncodedPublicKey),
-      {
-        name: "RSA-OAEP",
-        hash: "SHA-256",
-      },
-      true,
-      ["encrypt"]
-    );
-  };
-
+  // Remove from production code
   const privateKey = () => {
     return crypto.subtle.importKey(
       "pkcs8",
