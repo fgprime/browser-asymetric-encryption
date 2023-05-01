@@ -65,6 +65,24 @@ export default function Home() {
     }
   };
 
+  const doSomething = async () => {
+    // Load external public key from PEM file
+    const publicKeyPem = await loadPublicKey();
+
+    // Encrypt message based on public key
+    const encodedCipher = await encrypt(exampleText, publicKeyPem);
+    console.log(encodedCipher);
+
+    // Load internal example private key from PEM const
+    const privateKeyPem = pemEncodedPrivateKey;
+
+    // Decrypt message based on private key
+    const message = await decrypt(encodedCipher, privateKeyPem);
+
+    console.dir(exampleText);
+    console.dir(message);
+  };
+
   const loadPublicKey = async () => {
     try {
       const response = await fetch("publickey");
