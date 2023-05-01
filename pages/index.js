@@ -1,84 +1,37 @@
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { useEffect, useState } from "react";
 
-const pemEncodedPublicKey = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo5jclK+fySPnGFco1Nut
-7eiXzdPIkR5zBxVSKCXIdOJ0qsPjYIeKZQ1Di+xFfJJEO3xuNi8M9ol2Zqte/DD2
-W83OxQre0tGUmx5mddlChwUthPXt6i+lCEGpjkiD5fATK70YBMFc4UI3iTzFxPcQ
-ZXvhe53uCkR4JUJhFireeujExr+spoodaUxE4dZvu4WXeJiXrG5B9ONJ9awaZJAi
-kOqm7Q70cfI5LnW2BaOIQcgGPNvErGwBgJrE5lk704VIPvet7wnQKzD7I/YnAVWg
-t4iL6xSzKBp/mcS+4S78IIhkhAkxVUrvpnNNnb/Yab/0/7Fatp2PWINSGzD9qyKm
-rwIDAQAB
------END PUBLIC KEY-----`;
-
-const pemEncodedPrivateKey = `-----BEGIN PRIVATE KEY-----
-MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCjmNyUr5/JI+cY
-VyjU263t6JfN08iRHnMHFVIoJch04nSqw+Ngh4plDUOL7EV8kkQ7fG42Lwz2iXZm
-q178MPZbzc7FCt7S0ZSbHmZ12UKHBS2E9e3qL6UIQamOSIPl8BMrvRgEwVzhQjeJ
-PMXE9xBle+F7ne4KRHglQmEWKt566MTGv6ymih1pTETh1m+7hZd4mJesbkH040n1
-rBpkkCKQ6qbtDvRx8jkudbYFo4hByAY828SsbAGAmsTmWTvThUg+963vCdArMPsj
-9icBVaC3iIvrFLMoGn+ZxL7hLvwgiGSECTFVSu+mc02dv9hpv/T/sVq2nY9Yg1Ib
-MP2rIqavAgMBAAECggEAFS5EWMfIMz1/vQoD0lNC2IuFo/Nog0li8SbUhTgnFOMA
-4d8MwEGsLFskRKhpcrBpPx5kEoXS8tRnTPGhEZuxOb+SprY6lSbnS5ILB/UCBQMp
-mo5QqEJU5pXBwxcmZI3JnZ8UzgDO6qctE4qXvGGUcN8yGVQgLpogyAopEbqpJVZq
-rXT/WPSocjFEHGQqudAZsoSFVJOCVM4PrEFc3Tc7Tu4xnO0ttuwPQiRRINd/LkgE
-un02f8tEakmyLSOl6sm/yyoKR2klxIFUwVPJZtSInXInXGhv3iMZhIQuBh1xuw58
-3d4WJQ79tvWdF4QIjP9FPQvTvl3UIYgWmNF+BK34QQKBgQDN5vR+XG4Fv2dOyeGc
-WniFsbQ/t3K9Ndq1rahsGS1Jsz11Bv1gvuuNnP5KHckunrUGyFJiwOFEFyzWRY77
-kklq7fjwxdARawAtBDXuK6WGmnRophMMMvY9/Gw/pcdxEznqZD9erSNdOYVMzdB8
-nNDkijQ7gNY2ENR6Mu4BIsUJYQKBgQDLZtkvnlEHvOklWf32xSnOkVUBmt3sdtpX
-zy3LuUu4bWVASV4KcutzWpF7Ix6vwF03zJO7QYGAVEa55PONoUchgVV3g1VJJ7Q4
-wh0/PhTE0jOU6AafPybchghggloun5k+KfUWapJahTUVkN/CG+03fZKUawsRQFCO
-M94CaStaDwKBgQC5VHGrLy0E1WR6YXJGFpS22d3BIDERp+DFeJrJOdwuozvlEzaL
-ly1UWQP12FuWL9oHUdX991iLvkRoVVG+lMyqh6pzpcmDdAlDe6/DQdwKjQnMi/dH
-GrPT1Vnl7CTZXZHarQLxB+x14+lc2UAYedn4a4FaMbweDAYEO8VIlnA94QKBgQCt
-zXRH/D/BHOsbv4oDEvZmTEkW1f5L0ENCRQYcznilXtTl2ctBonEOYJVvYtMV2onM
-5EJX/+FohprovXpfyy+8sYcWWGLH3+Vfmn7jS2jzxanN03XVHWFXjjAaR0hIDpgj
-RjbmsKneL3TsuJ56fuJ0SBi4Ob97PjmXSTqrVLJ2gQKBgHXIsR2DjEVZRoEu+JIA
-ybVoeJNmfZNVcC/RE1ij74p42xMfVlhYxlaFH5SOp5T2GnaafkfL6JGd0ZXrIqPs
-ihBGzYBg5BqHhw3FAtZltaWjXTCDzsW0A4zuTK6tCw63e7sRVdcA67bIDrS5pIF3
-QfxCdZSvDUp8XAEUzdiiecUo
------END PRIVATE KEY-----`;
-
-const exmapleText =
+const MESSAGE =
   "Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.";
 
-const State = Object.freeze({
-  LOADING: "LOADING",
-  ERROR: "ERROR",
-  READY: "READY",
-});
-
 export default function Home() {
-  const [state, setState] = useState(State.LOADING);
-  let cryptoKey = null;
+  const [message, setMessage] = useState(MESSAGE);
+  const [ciphertext, setCiphertext] = useState(null);
+  const [encryption, setEncryption] = useState(false);
+  const [cryptoKey, setCryptoKey] = useState(null);
+
 
   useEffect(() => {
-    loadPublicKey().then((publicKeyPem) => {
-      createCryptoKeyFromPublicKey(publicKeyPem).then((result) => {
-        console.dir(result);
-        cryptoKey = result;
-        encrypt(exmapleText);
-      });
-    });
-  });
+    const creatCryptoKey = async () => {
+      const publicKeyPem = await loadPublicKey();
+      const result = await createCryptoKeyFromPublicKey(publicKeyPem);
+      setCryptoKey(result);
+    }
+    creatCryptoKey();
+  }, []);
 
-  const loadPublicKey = () => {
-    return fetch("publickey")
-      .then((response) => {
-        if (!response.ok) {
-          setState(State.ERROR);
-          throw new Error("Network response failed");
-        }
-        console.dir(response);
-        return response.text();
-      })
-      .catch((error) => {
-        console.log(error);
-        setState(State.ERROR);
-      });
+  const loadPublicKey = async () => {
+    const response = await fetch("publickey");
+    try {
+      if (!response.ok) {
+        throw new Error("Network response failed");
+      }
+      return response.text();
+    } catch (error) {
+      console.error(error);
+    }
+
   };
 
   const createCryptoKeyFromPublicKey = (publicKeyPem) => {
@@ -94,54 +47,54 @@ export default function Home() {
     );
   };
 
-  const encryptDecryptMessage = async (message, key, key2) => {
-    let encoder = new TextEncoder();
-    let encoded = encoder.encode(message);
+  const encryptMessage = async (message, key) => {
+    const encoder = new TextEncoder();
+    const encoded = encoder.encode(message);
 
-    let ciphertext = await window.crypto.subtle.encrypt(
+    const cipherArray = await window.crypto.subtle.encrypt(
       { name: "RSA-OAEP" },
       key,
       encoded
     );
+    setCiphertext(cipherArray);
 
-    let originalText = await window.crypto.subtle.decrypt(
+    return Uint8Array.from(cipherArray.toString(), (c) => c.charCodeAt(0)).join('')
+
+  };
+
+  const decryptMessage = async (key) => {
+    const originalText = await window.crypto.subtle.decrypt(
       {
         name: "RSA-OAEP",
       },
-      key2,
+      key,
       ciphertext
     );
 
     const decoder = new TextDecoder();
-    const decryptedText = decoder.decode(originalText);
-
-    console.dir(ciphertext);
-    console.log(decryptedText);
+    return decoder.decode(originalText);
   };
 
-  const encrypt = (text) => {
-    privateKey().then((key) => {
-      encryptDecryptMessage(text, cryptoKey, key);
-    });
+  const encrypt = async () => {
+    const cipher = await encryptMessage(message, cryptoKey);
+    setEncryption(true);
+    setMessage(cipher);
   };
 
-  // Remove from production code
-  const privateKey = () => {
-    return crypto.subtle.importKey(
-      "pkcs8",
-      pemToBinary(pemEncodedPrivateKey),
-      {
-        name: "RSA-OAEP",
-        hash: "SHA-256",
-      },
-      false,
-      ["decrypt"]
-    );
+  const decrypt = async () => {
+    try {
+      const key = await privateKey();
+      const message = await decryptMessage(key);
+      setEncryption(false);
+      setMessage(message);
+    } catch (error) {
+      console.error(error)
+    }
   };
 
   const pemToBinary = (pem) => {
     const lines = pem.split("\n");
-
+  
     const start = lines.findIndex((element) => {
       return element.includes("BEGIN") && element.includes("KEY");
     });
@@ -154,9 +107,23 @@ export default function Home() {
 
     const encoded = lines
       .filter((_, index) => index > start && index < end)
-      .join("");
+      .join("").replace(/\s/g, "");
 
     return Uint8Array.from(window.atob(encoded), (c) => c.charCodeAt(0));
+  };
+
+  // Remove from production code
+  const privateKey = () => {
+    return crypto.subtle.importKey(
+      "pkcs8",
+      pemToBinary(process.env.privateKey),
+      {
+        name: "RSA-OAEP",
+        hash: "SHA-256",
+      },
+      false,
+      ["decrypt"]
+    );
   };
 
   return (
@@ -168,11 +135,10 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1>Encryption example</h1>
-        <button onClick={encrypt}>Import PEM</button>
+        <h1>En/Decryption example</h1>
+        <p><input type="text" value={message} readOnly={encryption} onChange={(e) => setMessage(e.target.value)} /></p>
+        {encryption ? <button onClick={() => decrypt()}>Decrypt </button> : <button onClick={() => encrypt()}>Encrypt</button>}
       </main>
-
-      <footer className={styles.footer}></footer>
     </div>
   );
 }
